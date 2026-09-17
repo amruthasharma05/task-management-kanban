@@ -1,0 +1,56 @@
+BUILD ORDER
+
+1. Initialize React + TypeScript frontend.
+
+2. Create Node.js + Express + TypeScript backend.
+
+3. Configure PostgreSQL + Prisma.
+
+4. Create database models:
+   - User
+   - Project
+   - Task
+   - ProjectMember
+
+5. Implement REST CRUD APIs.
+
+6. Build Kanban UI:
+   - To-Do
+   - In Progress
+   - Done
+
+7. Add drag-and-drop using @dnd-kit.
+
+8. Connect drag-and-drop to:
+   PATCH /api/tasks/:id/status
+
+9. Add task creation/edit/delete.
+
+10. Add:
+    - priority
+    - description
+    - due date
+    - assigned user
+
+11. Add project user management.
+
+12. Add priority filtering.
+
+13. Add dynamic column counters.
+
+14. Implement Workload Balancing:
+    count each user's IN_PROGRESS tasks.
+
+15. If count > 5:
+    apply pulsing red animation to avatar.
+
+16. Add loading and error states.
+
+17. Make UI responsive.
+
+18. Add README and .env.example.
+
+19. Make sure the project runs from a fresh clone.
+
+20. Do not hardcode task data as the primary data source.
+    Tasks must come from the REST API/database.
