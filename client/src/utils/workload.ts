@@ -1,0 +1,1 @@
+import {Task} from '../types'; export const getUserInProgressTaskCount=(id:string,tasks:Task[])=>tasks.filter(t=>t.assignedTo===id&&t.status==='IN_PROGRESS').length; export const isUserOverloaded=(id:string,tasks:Task[])=>getUserInProgressTaskCount(id,tasks)>5;

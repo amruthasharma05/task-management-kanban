@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { prisma } from '../prisma/client';
+import { AppError } from '../middleware/error';
+import { idSchema, statusSchema, taskSchema } from '../middleware/validation';
+const r=Router(); const include={assignee:true,project:true};
+r.get('/',async(req,res,next)=>{try{const projectId=req.query.projectId? idSchema.parse(req.query.projectId):undefined;res.json(await prisma.task.findMany({where:{projectId},include,orderBy:{createdAt:'desc'}}))}catch(e){next(e)}});
+r.get('/:id',async(req,res,next)=>{try{idSchema.parse(req.params.id);const x=await prisma.task.findUnique({where:{id:req.params.id},include});if(!x)throw new AppError(404,'Task not found');res.json(x)}catch(e){next(e)}});
+r.post('/',async(req,res,next)=>{try{const d=taskSchema.parse(req.body);res.status(201).json(await prisma.task.create({data:{...d,dueDate:d.dueDate?new Date(d.dueDate):null},include}))}catch(e){next(e)}});
+r.put('/:id',async(req,res,next)=>{try{idSchema.parse(req.params.id);const d=taskSchema.parse(req.body);res.json(await prisma.task.update({where:{id:req.params.id},data:{...d,dueDate:d.dueDate?new Date(d.dueDate):null},include}))}catch(e){next(e)}});
+r.patch('/:id/status',async(req,res,next)=>{try{idSchema.parse(req.params.id);const {status}=statusSchema.parse(req.body);res.json(await prisma.task.update({where:{id:req.params.id},data:{status},include}))}catch(e){next(e)}});
+r.delete('/:id',async(req,res,next)=>{try{idSchema.parse(req.params.id);await prisma.task.delete({where:{id:req.params.id}});res.status(204).end()}catch(e){next(e)}});
+export default r;

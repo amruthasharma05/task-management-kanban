@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import { prisma } from '../prisma/client';
+import { AppError } from '../middleware/error';
+import { idSchema, projectSchema } from '../middleware/validation';
+const r=Router();
+const get=(req:any,res:any,next:any)=>prisma.project.findUnique({where:{id:req.params.id},include:{members:{include:{user:true}},tasks:{include:{assignee:true},orderBy:{createdAt:'desc'}}}}).then(x=>x?res.json(x):next(new AppError(404,'Project not found'))).catch(next);
+r.get('/',async(_req,res,next)=>{try{res.json(await prisma.project.findMany({orderBy:{createdAt:'asc'}}))}catch(e){next(e)}});
+r.get('/:id',get);
+r.post('/',async(req,res,next)=>{try{const data=projectSchema.parse(req.body);res.status(201).json(await prisma.project.create({data}))}catch(e){next(e)}});
+r.put('/:id',async(req,res,next)=>{try{idSchema.parse(req.params.id);res.json(await prisma.project.update({where:{id:req.params.id},data:projectSchema.parse(req.body)}))}catch(e){next(e)}});
+r.delete('/:id',async(req,res,next)=>{try{await prisma.project.delete({where:{id:req.params.id}});res.status(204).end()}catch(e){next(e)}});
+r.post('/:id/users',async(req,res,next)=>{try{idSchema.parse(req.params.id);const userId=idSchema.parse(req.body.userId);res.status(201).json(await prisma.projectMember.create({data:{projectId:req.params.id,userId},include:{user:true}}))}catch(e){next(e)}});
+r.delete('/:id/users/:userId',async(req,res,next)=>{try{await prisma.projectMember.delete({where:{projectId_userId:{projectId:req.params.id,userId:req.params.userId}}});res.status(204).end()}catch(e){next(e)}});
+export default r;

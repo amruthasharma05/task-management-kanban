@@ -1,0 +1,2 @@
+import { Router } from 'express'; import { prisma } from '../prisma/client'; import { idSchema } from '../middleware/validation';
+const r=Router(); r.get('/',async(_q,res,next)=>{try{res.json(await prisma.user.findMany({orderBy:{name:'asc'}}))}catch(e){next(e)}}); r.get('/:id',async(req,res,next)=>{try{idSchema.parse(req.params.id);const u=await prisma.user.findUnique({where:{id:req.params.id}});if(!u)return res.status(404).json({error:'User not found'});res.json(u)}catch(e){next(e)}}); export default r;
